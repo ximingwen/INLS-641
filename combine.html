@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+<link rel="stylesheet" href="jquery-ui.min.css">
+<style type="text/css">
+.myTooltip{
+    font-size:14px;
+    width:auto;
+    height:auto;
+    line-height: 24px;
+    position:absolute;
+    padding: 5px 15px;
+    background-color:#fff;
+    border-radius:5px;
+    box-shadow: 0px 0px 6px #ccc;
+}
+.tag {
+    font-size: 8px;
+    position: absolute;
+    top: -22px;
+    font-style:italic;
+}
+#date {
+    font-size: 14px;
+    margin-top: 8px;
+    font-weight: 600;
+}
+#slider-container {
+	position: absolute;
+    text-align: center;
+    width: 500px;
+    top: 50px;
+    left: 80px;
+}
+</style>
+</head>
+<body>
+<div id="slider-container">
+    <span class="tag" style="left: 0;">4/1/2020-4/15/2020</span>
+    <span class="tag" style="right: 0;">6/16/2020-6/30/2020</span>
+    <span id="display" class="tag" style="font-size: 14px; font-weight: 600; left: 180px;">4/1/2020-4/15/2020</span>
+    <div id="slider"></div>
+</div>
+<div id="container"></div>
+<script src="https://d3js.org/d3.v5.min.js"></script>
+<script src="jquery.min.js"></script>
+<script src="jquery-ui.min.js"></script>
+<script type="text/javascript" src="states.js"></script>
+<script type="text/javascript" src="data.js"></script>
+<script type="text/javascript">
+var tooltip = d3.select("body")
+    .append("div")
+    .attr("class", "myTooltip")
+    .style("visibility", "hidden")
+    .html("a simple tooltip</br>hh");
+
+var projection = d3.geoMercator()
+    .center([-98, 42])
+    .scale(900);
+var path = d3.geoPath().projection(projection);
+
+var svg = d3.select("#container")
+    .append("svg")
+    .attr("height", 750)
+    .attr("width", 1200);
+
+var colors = ["#0000e6", "#1a1aff", "#4d4dff", "#8080ff",
+                "#b3b3ff", "#e6e6ff", "#ffffff", "#ffb3b3", "#ff4d4d"];
+// var colors = ["rgb(227, 74, 51)","rgb(252, 141, 89)","rgb(253, 212, 158)","#ACD5EA"];
+var colorScale = d3.scaleQuantile()
+    .domain([-1, -0.5, 0, 0.5, 1, 1.5, 2, 2.5, 3])
+    .range(colors);
+
+var rScale = d3.scaleLinear()
+    .domain([287, 607478])
+    .range([8, 40]);
+
+svg.append("text")
+    .attr("x", 1000)
+    .attr("y", 80)
+    .style("fill", "#000")
+    .style("font-size", 18)
+    .text("Sentiment score")
+
+svg.selectAll("rect")
+    .data(colors)
+    .enter()
+    .append("rect")
+    .attr("x", 1000)
+    .attr("y", (d,i) => 100+i*30)
+    .attr("width", 30)
+    .attr("height", 12)
+    .attr("stroke", "#aaa")
+    .style("stroke-width", 0.5)
+    .attr("fill", d => d);
+
+// var texts = [">=-1", ">=0", ">=1", ">=2"];
+var texts = [">=3.0", ">=2.5", ">=2.0", ">=1.5", ">=1.0", ">=0.5", ">=0.0", ">=-0.5", ">=-1.0"];
+svg.selectAll(".legend")
+    .data(texts)
+    .enter()
+    .append("text")
+    .attr("x", 1040)
+    .attr("y", (d,i) => 110+i*30)
+    .style("fill", "#000")
+    .style("text-anchor", "start")
+    .style("font-size", 14)
+	.text(d => d);
+
+svg.selectAll("path")
+    .data(states.features)
+    .enter()
+    .append("path")
+    .attr("d", path)
+    .attr("fill", "none")
+    .style("stroke", "black")
+    .style("stroke-width", 0.5);
+
+
+//d3.csv("data.csv").then(data => {
+	//console.log(data);
+	data = d3.nest(data).key(d => d.Time_Period).entries(data);
+	console.log(data);
+
+	drawCircle(data, 0);
+
+	$("#slider").slider({
+        min: 0,
+        max: 5,
+        step: 1,
+        value: 0,
+        slide: function(event, ui) {
+			updateCircle(data, ui.value);
+            document.getElementById("display").innerHTML = data[ui.value].key;
+        }
+    });
+//})
+
+function drawCircle(data, index) {
+	let current_data = data[index].values;
+	svg.selectAll("circle")
+    .data(states.features)
+    .enter()
+    .append("circle")
+    .attr("class", "bubble")
+    .attr("transform", d => "translate(" + path.centroid(d) + ")")
+    .each(d => {
+        current_data.forEach(item => {
+            if (d.properties.name == item.State) {
+                d.case = +item.ConfirmedCases;
+                d.sentiment = +item.overall_sentiment;
+            }
+        })
+        /*if (!d.value) {
+            d.value = 1;
+        }
+        if (!d.temperature) {
+            d.temperature = 0;
+        }*/
+    })
+    .attr("r", d => rScale(d.case))
+    .attr("fill", d => colorScale(d.sentiment))
+    .style("stroke", "black")
+    .style("stroke-width", 0.5)
+    .on("mouseover", function(d) {
+        d3.select(this).style("stroke-width", 0.8);
+        tooltip.html("State: " + d.properties.name + "</br>ConfirmedCases: " + d.case + "</br>overall_sentiment: " + d.sentiment);
+        tooltip.style("visibility", "visible");
+    })
+    .on("mousemove", function() {
+        tooltip.style("top",(d3.event.pageY-10)+"px").style("left",(d3.event.pageX + 10)+"px");
+    })
+    .on("mouseout", function() {
+        d3.select(this).style("stroke-width", 0.5);
+        tooltip.style("visibility", "hidden");
+    })
+    .on("click", d => {
+        console.log(d);
+    });
+}
+
+function updateCircle(data, index) {
+	let current_data = data[index].values;
+	//console.log(index, data[index])
+
+	svg.selectAll("circle")
+	.each(function(d) {
+		current_data.forEach(item => {
+            if (d.properties.name == item.State) {
+                d.case = +item.ConfirmedCases;
+                d.sentiment = +item.overall_sentiment;
+            }
+        });
+
+        d3.select(this)
+        .transition().duration(400)
+        .attr("r", d => rScale(d.case))
+    	.attr("fill", d => colorScale(d.sentiment))
+    })
+	    .on("mouseover", function(d) {
+	        d3.select(this).style("stroke-width", 0.8);
+	        tooltip.html("State: " + d.properties.name + "</br>ConfirmedCases: " + d.case + "</br>overall_sentiment: " + d.sentiment);
+	        tooltip.style("visibility", "visible");
+	    })
+	    .on("mousemove", function() {
+	        tooltip.style("top",(d3.event.pageY-10)+"px").style("left",(d3.event.pageX + 10)+"px");
+	    })
+	    .on("mouseout", function() {
+	        d3.select(this).style("stroke-width", 0.5);
+	        tooltip.style("visibility", "hidden");
+	    })
+}
+
+</script>
+  <iframe src="line-2.html" width="1200px" height="800px" frameborder="0"
+scrolling="no"></iframe>
+</body>
+</html>
