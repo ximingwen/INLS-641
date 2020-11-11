@@ -2,8 +2,7 @@
 <head>
     <title>Twitter Sent Scatter Plot</title>
     <script src="https://d3js.org/d3.v5.min.js"></script>
-    <script src="https://unpkg.com/simple-statistics@6.0.1/dist/simple-statistics.min.js"></script>
-     <script src="d3CheckBox.js"></script>
+    <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
     <script type="text/javascript" src="line-data.js"></script>
     <style>
         /* Style information for axis labels */
@@ -254,12 +253,13 @@ Finally, here comes the actual JavaScript code.
         "sadness":valueline_sadness,
         "pos-neg":valueline_overall
     }
-
-var color = d3.scaleOrdinal(d3.schemeAccent);
+var category=['anger','anticipation','disgust','fear','joy','sadness','surprise','trust','pos-neg']
+var color = d3.scaleOrdinal().domain(category)
+  .range(d3.schemeSet3);
 var symbols = d3.scaleOrdinal(d3.symbols);
 var symbol = d3.symbol().size(100); 
 
-var category=['anger','anticipation','disgust','fear','joy','sadness','surprise','trust','pos-neg']
+
 
 svg.selectAll(".symbol")
     .data(category)
@@ -282,22 +282,23 @@ svg.selectAll(".symbol")
         })
     .on("click",function(d,i){
        var node=d3.select(this)
-       
-     
-        var status=legend._groups[0][i]
-        if (node.attr("checked")==undefined || node.attr("checked")==false){
-            console.log(status.class)
-            var category=d
+       var category=d;
+        if (node.attr("checked")==null || node.attr("checked")=="false"){
+             node.attr("checked","true")
+            console.log(node.attr("checked"));
+            
             svg.selectAll("."+d)
         .attr("d", valueline_dic[category](current_data))
         .style("stroke",  color(category));
-            node.attr("checked",true)
+           
         }
         else
         {
-           node.attr("checked",false)
+             node.attr("checked","false")
+             console.log(node.attr("checked"));
              svg.selectAll("."+d)
              .style("stroke",  "white");
+            
 
         }
         
