@@ -176,7 +176,8 @@ function drawCircle(data, index) {
         tooltip.style("visibility", "hidden");
     })
     .on("click", d => {
-        console.log(d);
+        console.log(d.properties.name);
+        document.getElementById('test').contentWindow.renderVis(d.properties.name)
     });
 }
 
@@ -213,7 +214,7 @@ function updateCircle(data, index) {
 }
 
 </script>
-  <iframe src="line-2.html" width="1200px" height="800px" frameborder="0"
+  <iframe src="line-2.html" id="test" width="1200px" height="800px" frameborder="0"
 scrolling="no"></iframe>
 </body>
 </html>

@@ -12,13 +12,13 @@
         }
 
         /* Style information for axis lines and tick marks */
-       
+
 
         .axis text {
             font-family: sans-serif;
             font-size: 11px;
         }
-        path { 
+        path {
             stroke: steelblue;
             stroke-width: 2;
             fill: none;
@@ -40,7 +40,7 @@ Select control to set the region to be visualized.  Note that the JavaScript
 callback named "renderVis(...)"" is triggered each time the value for this select
 control changes.
 -->
-<p>Select a state:
+<!-- <p>Select a state:
     <select onchange="renderVis(this.options[this.selectedIndex].value);">
         <option value="AL">Alabama</option>
         <option value="AZ">Arizona</option>
@@ -55,7 +55,7 @@ control changes.
         <option value="ID">Idaho</option>
         <option value="US">United States</option>
     </select>
-</p>
+</p> -->
 
 <!--
 This span is used to show "details on demand" when a circle in the scatterplot is moused over.
@@ -98,7 +98,7 @@ Finally, here comes the actual JavaScript code.
 
     var mindate = new Date(2020,3,1),
         maxdate = new Date(2020,5,16);
-     
+
     var x = d3.scaleTime()
        .domain([mindate,maxdate])
        .range([margin, 720]);
@@ -174,7 +174,7 @@ Finally, here comes the actual JavaScript code.
 
     svg.append("path")
         .attr("class","cases")
-        
+
          svg.append("path")
         .attr("class","anger")
          svg.append("path")
@@ -193,7 +193,7 @@ Finally, here comes the actual JavaScript code.
         .attr("class","surprise")
          svg.append("path")
         .attr("class","overall")
-    
+
 
     var valueline_case = d3.line()
     .x(function(d) { return x(Date.parse(d.Time_Period)); })
@@ -202,7 +202,7 @@ Finally, here comes the actual JavaScript code.
     var valueline_anger = d3.line()
     .x(function(d) { return x(Date.parse(d.Time_Period)); })
     .y(function(d) { return y(d.anger); });
-    
+
     var valueline_disgust = d3.line()
     .x(function(d) { return x(Date.parse(d.Time_Period)); })
     .y(function(d) { return y(d.disgust); });
@@ -234,7 +234,7 @@ Finally, here comes the actual JavaScript code.
       var valueline_sadness = d3.line()
     .x(function(d) { return x(Date.parse(d.Time_Period)); })
     .y(function(d) { return y(d.sadness); });
-    
+
       var valueline_overall = d3.line()
     .x(function(d) { return x(Date.parse(d.Time_Period)); })
     .y(function(d) { return y(d.overall_sentiment); });
@@ -245,9 +245,9 @@ Finally, here comes the actual JavaScript code.
         var data_subset = data;
 
         data_subset = data.filter(function(d) {return (d.state == _subset); })
-        
 
-  
+
+
         let pairs=data_subset.map(function(d){return d.scores})
 
         svg.selectAll(".cases")
@@ -291,26 +291,26 @@ Finally, here comes the actual JavaScript code.
         .attr("d", valueline_joy(pairs))
         .style("stroke",  "pink");
 
-       
-        
+
+
          svg.selectAll(".surprise")
         .attr("d", valueline_surprise(pairs))
         .style("stroke",  "brown");
 
-       
-        
-   */    
-      
+
+
+   */
+
 
 
         //Render the sentiment scatterplot.
-        
+
 
         // Note: we don't need to deal with the update selection.  WHY?
     }
 
     // Update the correlation score based on the selected subset.
-   
+
     renderVis("AL");
 
 </script>
