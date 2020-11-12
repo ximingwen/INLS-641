@@ -297,7 +297,7 @@ svg.selectAll(".symbol")
              node.attr("checked","false")
              console.log(node.attr("checked"));
              svg.selectAll("."+d)
-             .style("stroke",  "white");
+             .attr("d", [])
             
 
         }
@@ -326,58 +326,15 @@ svg.selectAll(".symbol")
 
         let pairs=data_subset.map(function(d){return d.scores})
         current_data=pairs
+        
+        for (var key in valueline_dic) {
+             svg.selectAll("."+key)
+             .attr("d", [])
+        }
 
         svg.selectAll(".cases")
         .attr("d", valueline_case(pairs))
         .style("stroke-dasharray", ("3, 3"))
-
-/*
-          svg.selectAll(".overall")
-        .attr("d", valueline_overall(pairs))
-        .style("stroke",  color("pos-neg"));
-
-         svg.selectAll(".trust")
-        .attr("d", valueline_trust(pairs))
-        .style("stroke",  color("trust"));
-
-
-
-/*
-
-        svg.selectAll(".anger")
-        .attr("d", valueline_anger(pairs))
-        .style("stroke",  "red");
-
-        svg.selectAll(".anticipation")
-        .attr("d", valueline_anticipation(pairs))
-        .style("stroke",  "yellow");
-
-        svg.selectAll(".fear")
-        .attr("d", valueline_fear(pairs))
-        .style("stroke",  "orange");
-
-        svg.selectAll(".disgust")
-        .attr("d", valueline_disgust(pairs))
-        .style("stroke",  "green");
-
-        svg.selectAll(".sadness")
-        .attr("d", valueline_sadness(pairs))
-        .style("stroke",  "purple");
-
-        svg.selectAll(".joy")
-        .attr("d", valueline_joy(pairs))
-        .style("stroke",  "pink");
-
-
-
-         svg.selectAll(".surprise")
-        .attr("d", valueline_surprise(pairs))
-        .style("stroke",  "brown");
-
-
-
-   */
-
 
 
         //Render the sentiment scatterplot.
