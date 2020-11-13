@@ -2,7 +2,7 @@
 <head>
     <title>Twitter Sent Scatter Plot</title>
     <script src="https://d3js.org/d3.v5.min.js"></script>
-    <script src="https://unpkg.com/simple-statistics@6.0.1/dist/simple-statistics.min.js"></script>
+    <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
     <script type="text/javascript" src="line-data.js"></script>
     <style>
         /* Style information for axis labels */
@@ -82,9 +82,11 @@ Finally, here comes the actual JavaScript code.
     // This variable is used to define size of the visualization canvas and the
     // margin (or "padding") around the scatter plot.  We use the margin to draw
     // things like axis labels.
+
     var height = 500;
     var width = 900;
     var margin = 40;
+    var current_data;
 
     // Create the SVG canvas that will be used to render the visualization.
     var svg = d3.select("#vis_container")
@@ -192,7 +194,7 @@ Finally, here comes the actual JavaScript code.
          svg.append("path")
         .attr("class","surprise")
          svg.append("path")
-        .attr("class","overall")
+        .attr("class","pos-neg")
 
 
     var valueline_case = d3.line()
@@ -239,6 +241,80 @@ Finally, here comes the actual JavaScript code.
     .x(function(d) { return x(Date.parse(d.Time_Period)); })
     .y(function(d) { return y(d.overall_sentiment); });
 
+    var valueline_dic={
+        "anger":valueline_anger,
+        "disgust":valueline_disgust,
+        "fear":valueline_fear,
+        "sadness":valueline_sadness,
+        "trust":valueline_trust,
+        "joy":valueline_joy,
+        "anticipation":valueline_anticipation,
+        "surprise":valueline_surprise,
+        "sadness":valueline_sadness,
+        "pos-neg":valueline_overall
+    }
+var category=['anger','anticipation','disgust','fear','joy','sadness','surprise','trust','pos-neg']
+var color = d3.scaleOrdinal().domain(category)
+  .range(d3.schemeSet3);
+var symbols = d3.scaleOrdinal(d3.symbols);
+var symbol = d3.symbol().size(100); 
+
+
+
+svg.selectAll(".symbol")
+    .data(category)
+  .enter().append("path")
+    .attr("class", "symbol")
+    .style("fill", function(d) { return color(d); })
+   
+  
+     var legend = svg.selectAll(".legend")
+    .data(color.domain())
+  .enter().append("g")
+    .attr("class", "legend")
+    .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+  
+  legend.append("path")
+    .style("fill", function(d) { return color(d); })
+        .attr("d", function(d, i) { return symbol.type(symbols(1))(); })
+        .attr("transform", function(d, i) { 
+            return "translate(" + (width -10) + "," + 10 + ")"; 
+        })
+    .on("click",function(d,i){
+       var node=d3.select(this)
+       var category=d;
+        if (node.attr("checked")==null || node.attr("checked")=="false"){
+             node.attr("checked","true")
+            console.log(node.attr("checked"));
+            
+            svg.selectAll("."+d)
+        .attr("d", valueline_dic[category](current_data))
+        .style("stroke",  color(category));
+           
+        }
+        else
+        {
+             node.attr("checked","false")
+             console.log(node.attr("checked"));
+             svg.selectAll("."+d)
+             .attr("d", [])
+            
+
+        }
+        
+    console.log("test",d)
+    
+    })
+
+
+  
+  legend.append("text")
+      .attr("x", width - 24)
+      .attr("y", 9)
+      .attr("dy", ".35em")
+      .style("text-anchor", "end")
+      .text(function(d) { return d; });
+
     // Next, we define the renderVis callback.  This is used when the page first loads
     // to draw data for the entire US.  It is also called whenever the select control is changed.
     function renderVis(_subset) {
@@ -249,58 +325,16 @@ Finally, here comes the actual JavaScript code.
 
 
         let pairs=data_subset.map(function(d){return d.scores})
+        current_data=pairs
+        
+        for (var key in valueline_dic) {
+             svg.selectAll("."+key)
+             .attr("d", [])
+        }
 
         svg.selectAll(".cases")
         .attr("d", valueline_case(pairs))
         .style("stroke-dasharray", ("3, 3"))
-
-
-          svg.selectAll(".overall")
-        .attr("d", valueline_overall(pairs))
-        .style("stroke",  "black");
-
-         svg.selectAll(".trust")
-        .attr("d", valueline_trust(pairs))
-        .style("stroke",  "blue");
-
-
-
-/*
-
-        svg.selectAll(".anger")
-        .attr("d", valueline_anger(pairs))
-        .style("stroke",  "red");
-
-        svg.selectAll(".anticipation")
-        .attr("d", valueline_anticipation(pairs))
-        .style("stroke",  "yellow");
-
-        svg.selectAll(".fear")
-        .attr("d", valueline_fear(pairs))
-        .style("stroke",  "orange");
-
-        svg.selectAll(".disgust")
-        .attr("d", valueline_disgust(pairs))
-        .style("stroke",  "green");
-
-        svg.selectAll(".sadness")
-        .attr("d", valueline_sadness(pairs))
-        .style("stroke",  "purple");
-
-        svg.selectAll(".joy")
-        .attr("d", valueline_joy(pairs))
-        .style("stroke",  "pink");
-
-
-
-         svg.selectAll(".surprise")
-        .attr("d", valueline_surprise(pairs))
-        .style("stroke",  "brown");
-
-
-
-   */
-
 
 
         //Render the sentiment scatterplot.

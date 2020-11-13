@@ -32,10 +32,25 @@
     width: 500px;
     top: 50px;
     left: 80px;
+    margin-top:60px;
 }
 </style>
 </head>
 <body>
+    <p>Select a sentiment category:
+        <select onchange="renderVis(this.options[this.selectedIndex].value);">
+            <option value="overall">Overall</option>
+            <option value="trust">Trust</option>
+            <option value="surprise">Surprise</option>
+            <option value="sadness">Sadness</option>
+            <option value="joy">Joy</option>
+            <option value="fear">Fear</option>
+            <option value="disgust">Disgust</option>
+            <option value="anticipation">Anticipation</option>
+            <option value="anger">Anger</option>
+
+        </select>
+    </p>
 <div id="slider-container">
     <span class="tag" style="left: 0;">4/1/2020-4/15/2020</span>
     <span class="tag" style="right: 0;">6/16/2020-6/30/2020</span>
@@ -47,7 +62,15 @@
 <script src="jquery.min.js"></script>
 <script src="jquery-ui.min.js"></script>
 <script type="text/javascript" src="states.js"></script>
-<script type="text/javascript" src="data.js"></script>
+<script type="text/javascript" src="data_overall.js"></script>
+<script type="text/javascript" src="data_trust.js"></script>
+<script type="text/javascript" src="data_surprise.js"></script>
+<script type="text/javascript" src="data_sadness.js"></script>
+<script type="text/javascript" src="data_joy.js"></script>
+<script type="text/javascript" src="data_fear.js"></script>
+<script type="text/javascript" src="data_disgust.js"></script>
+<script type="text/javascript" src="data_anticipation.js"></script>
+<script type="text/javascript" src="data_anger.js"></script>
 <script type="text/javascript">
 var tooltip = d3.select("body")
     .append("div")
@@ -96,7 +119,7 @@ svg.selectAll("rect")
     .attr("fill", d => d);
 
 // var texts = [">=-1", ">=0", ">=1", ">=2"];
-var texts = [">=3.0", ">=2.5", ">=2.0", ">=1.5", ">=1.0", ">=0.5", ">=0.0", ">=-0.5", ">=-1.0"];
+var texts = [">=-1", ">=-0.5", ">=0", ">=0.5", ">=1.0", ">=1.5", ">=2.0", ">=2.5", ">=3"];
 svg.selectAll(".legend")
     .data(texts)
     .enter()
@@ -118,11 +141,40 @@ svg.selectAll("path")
     .style("stroke-width", 0.5);
 
 
-//d3.csv("data.csv").then(data => {
-	//console.log(data);
-	data = d3.nest(data).key(d => d.Time_Period).entries(data);
-	console.log(data);
+var data = d3.nest(data_overall).key(d => d.Time_Period).entries(data_overall);
 
+function renderVis(_sub){
+//d3.csv("data.csv").then(data => {
+    //console.log(data);
+    if (_sub==="overall"){
+        console.log(_sub==="overall");
+        data = d3.nest(data_overall).key(d => d.Time_Period).entries(data_overall);}
+        else if (_sub==="trust"){
+        console.log(_sub==="overall");
+        data = d3.nest(data_trust).key(d => d.Time_Period).entries(data_trust);}
+            else if (_sub==="surprise"){
+        console.log(_sub==="overall");
+        data = d3.nest(data_surprise).key(d => d.Time_Period).entries(data_surprise);}
+            else if (_sub==="sadness"){
+        console.log(_sub==="overall");
+        data = d3.nest(data_sadness).key(d => d.Time_Period).entries(data_sadness);}
+            else if (_sub==="joy"){
+        console.log(_sub==="overall");
+        data = d3.nest(data_joy).key(d => d.Time_Period).entries(data_joy);}
+            else if (_sub==="fear"){
+        console.log(_sub==="overall");
+        data = d3.nest(data_fear).key(d => d.Time_Period).entries(data_fear);}
+            else if (_sub==="overall"){
+        console.log(_sub==="disgust");
+        data = d3.nest(data_disgust).key(d => d.Time_Period).entries(data_disgust);}
+            else if (_sub==="anticipation"){
+        console.log(_sub==="overall");
+        data = d3.nest(data_anticipation).key(d => d.Time_Period).entries(data_anticipation);}
+
+    else{
+        console.log(_sub==="anger");
+        data = d3.nest(data_anger).key(d => d.Time_Period).entries(data_anger);}}
+        console.log(data);
 	drawCircle(data, 0);
 
 	$("#slider").slider({
@@ -165,7 +217,7 @@ function drawCircle(data, index) {
     .style("stroke-width", 0.5)
     .on("mouseover", function(d) {
         d3.select(this).style("stroke-width", 0.8);
-        tooltip.html("State: " + d.properties.name + "</br>ConfirmedCases: " + d.case + "</br>overall_sentiment: " + d.sentiment);
+        tooltip.html("State: " + d.properties.name + "</br>Confirmed Cases: " + d.case + "</br>Sentiment Score: " + d.sentiment);
         tooltip.style("visibility", "visible");
     })
     .on("mousemove", function() {
@@ -201,7 +253,7 @@ function updateCircle(data, index) {
     })
 	    .on("mouseover", function(d) {
 	        d3.select(this).style("stroke-width", 0.8);
-	        tooltip.html("State: " + d.properties.name + "</br>ConfirmedCases: " + d.case + "</br>overall_sentiment: " + d.sentiment);
+	        tooltip.html("State: " + d.properties.name + "</br>Confirmed Cases: " + d.case + "</br>Sentiment Score: " + d.sentiment);
 	        tooltip.style("visibility", "visible");
 	    })
 	    .on("mousemove", function() {
@@ -212,7 +264,7 @@ function updateCircle(data, index) {
 	        tooltip.style("visibility", "hidden");
 	    })
 }
-
+renderVis("overall");
 </script>
   <iframe src="line-2.html" id="test" width="1200px" height="800px" frameborder="0"
 scrolling="no"></iframe>
