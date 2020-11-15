@@ -88,8 +88,8 @@ var svg = d3.select("#container")
     .attr("height", 750)
     .attr("width", 1200);
 
-var colors = ["#ffffd9", "#edf8b1", "#c7e9b4", "#7fcdbb",
-                "#41b6c4", "#1d91c0", "#225ea8", "#253494", "#081d58"];
+var colors2 = ["#ffffd9", "#edf8b1", "#c7e9b4", "#7fcdbb", "#41b6c4", "#1d91c0", "#225ea8", "#253494", "#081d58"];
+var colors = ["#081d58","#253494","#225ea8","#1d91c0","#41b6c4","#7fcdbb","#c7e9b4","#edf8b1","#ffffd9"]
 // var colors = ["rgb(227, 74, 51)","rgb(252, 141, 89)","rgb(253, 212, 158)","#ACD5EA"];
 // #ffffd9
 // #edf8b1
@@ -117,7 +117,7 @@ svg.append("text")
     .text("Sentiment score")
 
 svg.selectAll("rect")
-    .data(colors)
+    .data(colors2)
     .enter()
     .append("rect")
     .attr("x", 1000)
