@@ -8,7 +8,7 @@ with open('csvjson.json') as f:
 		precessed_data["state"]=data["state"]
 		precessed_data['scores']={}
 		precessed_data['scores']['anger']=data["anger"]
-		precessed_data['scores']['anticipation']=data["anger"]
+		precessed_data['scores']['anticipation']=data["anticipation"]
 		precessed_data['scores']['disgust']=data["disgust"]
 		precessed_data['scores']['fear']=data["fear"]
 		precessed_data['scores']['sadness']=data["sadness"]

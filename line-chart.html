@@ -78,6 +78,7 @@ This is the container in which D3 will draw the scatter plot.
 Finally, here comes the actual JavaScript code.
 -->
 <script>
+
     // This variable is used to define size of the visualization canvas and the
     // margin (or "padding") around the scatter plot.  We use the margin to draw
     // things like axis labels.
@@ -85,6 +86,65 @@ Finally, here comes the actual JavaScript code.
     var width = 900;
     var margin = 40;
     var current_data;
+
+    var us_state_abbrev = {
+    'Alabama': 'AL',
+    'Alaska': 'AK',
+    'American Samoa': 'AS',
+    'Arizona': 'AZ',
+    'Arkansas': 'AR',
+    'California': 'CA',
+    'Colorado': 'CO',
+    'Connecticut': 'CT',
+    'Delaware': 'DE',
+    'District of Columbia': 'DC',
+    'Florida': 'FL',
+    'Georgia': 'GA',
+    'Guam': 'GU',
+    'Hawaii': 'HI',
+    'Idaho': 'ID',
+    'Illinois': 'IL',
+    'Indiana': 'IN',
+    'Iowa': 'IA',
+    'Kansas': 'KS',
+    'Kentucky': 'KY',
+    'Louisiana': 'LA',
+    'Maine': 'ME',
+    'Maryland': 'MD',
+    'Massachusetts': 'MA',
+    'Michigan': 'MI',
+    'Minnesota': 'MN',
+    'Mississippi': 'MS',
+    'Missouri': 'MO',
+    'Montana': 'MT',
+    'Nebraska': 'NE',
+    'Nevada': 'NV',
+    'New Hampshire': 'NH',
+    'New Jersey': 'NJ',
+    'New Mexico': 'NM',
+    'New York': 'NY',
+    'North Carolina': 'NC',
+    'North Dakota': 'ND',
+    'Northern Mariana Islands':'MP',
+    'Ohio': 'OH',
+    'Oklahoma': 'OK',
+    'Oregon': 'OR',
+    'Pennsylvania': 'PA',
+    'Puerto Rico': 'PR',
+    'Rhode Island': 'RI',
+    'South Carolina': 'SC',
+    'South Dakota': 'SD',
+    'Tennessee': 'TN',
+    'Texas': 'TX',
+    'Utah': 'UT',
+    'Vermont': 'VT',
+    'Virgin Islands': 'VI',
+    'Virginia': 'VA',
+    'Washington': 'WA',
+    'West Virginia': 'WV',
+    'Wisconsin': 'WI',
+    'Wyoming': 'WY'
+}
 
     // Create the SVG canvas that will be used to render the visualization.
     var svg = d3.select("#vis_container")
@@ -337,15 +397,18 @@ svg.selectAll(".symbol")
     // to draw data for the entire US.  It is also called whenever the select control is changed.
     function renderVis(_subset) {
         var data_subset = data;
+        console.log(_subset)
 
-        data_subset = data.filter(function(d) {return (d.state == _subset); })
+
+        data_subset = data.filter(function(d) {return (d.state == us_state_abbrev[_subset]); })
+        console.log(data_subset)
 
 
 
         let pairs=data_subset.map(function(d){return d.scores})
         current_data=pairs
 
-
+          console.log(current_data)
 
     if(_subset == "California" || _subset == "New York"){
         svg.selectAll(".cases")
