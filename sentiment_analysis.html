@@ -42,13 +42,13 @@
         This visualization tool displays the progression of various emotions over the course
         of the COVID-19 outbreak in Spring, 2020. Emotion data from each U.S. state
         has been gathered from Twitter and analyzed using the R Syuzhet Package for sentiment analysis.
-        To view the distribution of a new emotion, select one from the dropdown menu.
+        To view the distribution of an emotion, select one from the dropdown menu.
         To change the date of the data you would like to view, use the sliding bar.
         The size of each bubble on the map corresponds with the number of confirmed COVID-19 cases
-        recorded in each respective state. The color of each bubble represents its "Sentiment Score," or
-        how strongly the emotion was expressed on the state's Twitter feed.
-        The line graph below will represent changes in emotion over time. Click on a state's bubble to populate
-        the graph with data. select and deselect emotions on the right hand side that you would like to visualize.
+        recorded in each respective state. The color of each state represents its "Sentiment Score," or
+        how strongly the emotion was expressed on the state's Twitter feed. The higher the score, the stronger the emotion.
+        The line graph below will represent changes in emotion over time. Click on a state to populate
+        the graph with data.
 
     </font>
     </p>
@@ -76,11 +76,11 @@
 
     <div id="container"></div>
 
-<span id="statename"></span>
-<p style="font-family:verdana"><font size="+1"><b>Changes in Twitter Sentiment from April to June, 2020 in *INSERT STATE*</b></font></p>
+<p style="font-family:verdana"><font size="+1"><b>Changes in Twitter Sentiment from April to June, 2020</b></font></p>
 <p style="font-family:verdana"><font size="-1">
     The number of confirmed COVID-19 cases is represented by the dashed line.
-    Select and deselect emotions to visualize on the right hand side of the graph.
+    Select and deselect emotions to visualize on the right hand side of the graph.</font></p>
+<span id="statename" style="font-family:verdana">&nbsp;</span><br/>
 
 </font>
 
@@ -184,17 +184,20 @@
             .style("stroke", "black")
             .style("stroke-width", 0.5)
             .on("mouseover", function(d) {
-                d3.select(this).style("stroke-width", 0.8);
+                d3.select(this).style("stroke-width", 0.5).style("opacity", 0.5);
                 tooltip.html("State: " + d.properties.name + "</br>Confirmed Cases: " + d.case + "</br>Sentiment Score: " + d.sentiment);
                 tooltip.style("visibility", "visible");})
             .on("mousemove", function() {
                 tooltip.style("top",(d3.event.pageY-10)+"px").style("left",(d3.event.pageX + 10)+"px");})
             .on("mouseout", function() {
-                d3.select(this).style("stroke-width", 0.5);
+                d3.select(this).style("stroke-width", 0.5).style("opacity", 1);
                 tooltip.style("visibility", "hidden");})
             .on("click", d => {
                 console.log(d.properties.name);
-                document.getElementById('test').contentWindow.renderVis(d.properties.name)});
+                document.getElementById('test').contentWindow.renderVis(d.properties.name);
+                document.getElementById("statename").innerHTML = "You are currently viewing data for " + d.properties.name + " State."},
+                function() {d3.select(this).style("opacity", 0.3)}
+            )
     };
 
 
@@ -210,18 +213,22 @@
                     }});
                 d3.select(this)
                     .transition().duration(400)
-                    .attr("fill", d => colorScale(d.sentiment))
-            })
+                    .attr("fill", d => colorScale(d.sentiment))})
             .on("mouseover", function(d) {
-                        d3.select(this).style("stroke-width", 0.8);
-                        tooltip.html("State: " + d.properties.name + "</br>Confirmed Cases: " + d.case + "</br>Sentiment Score: " + d.sentiment);
-                        tooltip.style("visibility", "visible"); })
+                d3.select(this).style("stroke-width", 0.5).style("opacity", 0.5);
+                tooltip.html("State: " + d.properties.name + "</br>Confirmed Cases: " + d.case + "</br>Sentiment Score: " + d.sentiment);
+                tooltip.style("visibility", "visible");})
             .on("mousemove", function() {
-                        tooltip.style("top",(d3.event.pageY-10)+"px").style("left",(d3.event.pageX + 10)+"px");})
+                tooltip.style("top",(d3.event.pageY-10)+"px").style("left",(d3.event.pageX + 10)+"px");})
             .on("mouseout", function() {
-                        d3.select(this).style("stroke-width", 0.5);
-                        tooltip.style("visibility", "hidden");
-                    })
+                d3.select(this).style("stroke-width", 0.5).style("opacity", 1);
+                tooltip.style("visibility", "hidden");})
+            .on("click", d => {
+                console.log(d.properties.name);
+                document.getElementById('test').contentWindow.renderVis(d.properties.name);
+                document.getElementById("statename").innerHTML = "You are currently viewing data for " + d.properties.name + " State."},
+                function() {d3.select(this).style("opacity", 0.3)}
+            )
 
     };
 
