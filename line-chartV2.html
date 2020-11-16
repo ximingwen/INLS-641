@@ -1,0 +1,478 @@
+<html>
+<head>
+    <title>Twitter Sent Scatter Plot</title>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://unpkg.com/simple-statistics@6.0.1/dist/simple-statistics.min.js"></script>
+    <script type="text/javascript" src="line-data.js"></script>
+    <style>
+        /* Style information for axis labels */
+        .axis-label {
+            font-family: sans-serif;
+            font-size: 12px;
+        }
+
+        /* Style information for axis lines and tick marks */
+
+
+        .axis text {
+            font-family: sans-serif;
+            font-size: 11px;
+        }
+        path {
+            stroke: steelblue;
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: grey;
+            stroke-width: 1;
+            shape-rendering: crispEdges;
+        }
+
+    </style>
+</head>
+<body>
+<!--
+Select control to set the region to be visualized.  Note that the JavaScript
+callback named "renderVis(...)"" is triggered each time the value for this select
+control changes.
+-->
+<!-- <p>Select a state:
+    <select onchange="renderVis(this.options[this.selectedIndex].value);">
+        <option value="AL">Alabama</option>
+        <option value="AZ">Arizona</option>
+        <option value="AR">Arkansas</option>
+        <option value="CA">California</option>
+        <option value="CO">Colorado</option>
+        <option value="CT">Connecticut</option>
+        <option value="DE">Delaware</option>
+        <option value="FL">Florida</option>
+        <option value="GA">Georgia</option>
+        <option value="HI">Hawaii</option>
+        <option value="ID">Idaho</option>
+        <option value="US">United States</option>
+    </select>
+</p> -->
+
+<!--
+This span is used to show "details on demand" when a circle in the scatterplot is moused over.
+-->
+<span id="details">&nbsp;</span><br/>
+
+<!--
+This span is used to show the computed correlation value for the selected subset of data.
+-->
+<span id="correlation">&nbsp;</span>
+
+<!--
+This is the container in which D3 will draw the scatter plot.
+-->
+<div id="vis_container">
+</div>
+
+<p>
+</p>
+<!--
+Finally, here comes the actual JavaScript code.
+-->
+<script>
+    // This variable is used to define size of the visualization canvas and the
+    // margin (or "padding") around the scatter plot.  We use the margin to draw
+    // things like axis labels.
+    var height = 500;
+    var width = 900;
+    var margin = 40;
+    var current_data;
+
+    // Create the SVG canvas that will be used to render the visualization.
+    var svg = d3.select("#vis_container")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height);
+
+
+    // Define a variety of scales, for color, x axis and y axis.
+    // Poverty rates are all below 30 percent.
+
+    var mindate = new Date(2020,3,1),
+        maxdate = new Date(2020,5,16);
+
+    var x = d3.scaleTime()
+       .domain([mindate,maxdate])
+       .range([margin, 720]);
+
+    // sentiment
+    var y = d3.scaleLinear()
+        .domain([3,-2])
+        .range([margin, height-margin]);
+
+    // COVID cases
+    var y2 = d3.scaleLinear()
+        .domain([80000,0])
+        .range([margin, height-margin]);
+
+    var y3 = d3.scaleLinear()
+        .domain([610000,0])
+        .range([margin, height-margin]);
+
+    var y4 = d3.scaleLinear()
+        .domain([200000,0])
+        .range([margin, height-margin]);
+
+    // There are 4 regions in the continental US, plus "Other" for
+    // Hawaii and Alaska.
+    // var states = ["AL","AR", "AZ", "CA", "CA", "CT", "GA",
+    //                 "DE", "FL", "HI", "ID", "US"];
+    // var line_color = d3.scaleOrdinal(d3.schemeCategory10);
+
+    // Add axes.  First the X axis and label.
+    svg.append("g")
+        .attr("class", "axis")
+        // .attr("transform", "translate(0,"+(500-margin)+")")
+        .attr("transform", "translate(0,"+(500-margin)+")")
+        .call(d3.axisBottom(x));
+
+    svg.append("text")
+        .attr("class", "axis-label")
+        .attr("y", 495)
+        .attr("x",390)
+        .style("text-anchor", "middle")
+        .text("Date")
+
+    // Now the Y axis and label.
+    svg.append("g")
+        .attr("class", "axis")
+        .attr("transform", "translate("+margin+",0)")
+        .call(d3.axisLeft(y))
+
+    svg.append("text")
+        .attr("transform", "rotate(90)")
+        .attr("class", "axis-label")
+        .attr("y", -5)
+        .attr("x",0 + (500 / 2))
+        .style("text-anchor", "middle")
+        .text("Sentiment Score");
+
+    // Now the Y2 axis and label.
+    svg.append("g")
+        .attr("class", "axis")
+        .attr("id", "test2")
+        .attr("transform", "translate("+(width*4/5)+",0)")
+        .call(d3.axisRight(y2))
+
+    svg.append("text")
+        .attr("transform", "rotate(90)")
+        .attr("class", "axis-label")
+        .attr("y", -775)
+        .attr("x",0 + (500 / 2))
+        .style("text-anchor", "middle")
+        .style("fill", "steelblue")
+        .text("Number of Confirmed Cases");
+
+    // Now a clipping plain for the main axes
+    // Add the clip path.
+    svg.append("clipPath")
+        .attr("id", "clip")
+        .append("rect")
+        .attr("x", margin)
+        .attr("y", margin)
+        .attr("y2", margin)
+        .attr("width", width-2*margin)
+        .attr("height", height-2*margin);
+
+    svg.append("path")
+        .attr("class","cases")
+
+         svg.append("path")
+        .attr("class","anger")
+         svg.append("path")
+        .attr("class","disgust")
+         svg.append("path")
+        .attr("class","fear")
+         svg.append("path")
+        .attr("class","sadness")
+         svg.append("path")
+        .attr("class","trust")
+         svg.append("path")
+        .attr("class","joy")
+         svg.append("path")
+        .attr("class","anticipation")
+         svg.append("path")
+        .attr("class","surprise")
+         svg.append("path")
+        .attr("class","pos-neg")
+
+
+    var valueline_case = d3.line()
+        .x(function(d) { return x(Date.parse(d.Time_Period)); })
+        .y(function(d) { return y2(d.cases); });
+
+    var valueline_bigcase = d3.line()
+        .x(function(d) { return x(Date.parse(d.Time_Period)); })
+        .y(function(d) { return y3(d.cases); });
+        
+    var valueline_medcase = d3.line()
+        .x(function(d) { return x(Date.parse(d.Time_Period)); })
+        .y(function(d) { return y4(d.cases); });
+
+    var valueline_anger = d3.line()
+    .x(function(d) { return x(Date.parse(d.Time_Period)); })
+    .y(function(d) { return y(d.anger); });
+
+    var valueline_disgust = d3.line()
+    .x(function(d) { return x(Date.parse(d.Time_Period)); })
+    .y(function(d) { return y(d.disgust); });
+
+     var valueline_fear = d3.line()
+    .x(function(d) { return x(Date.parse(d.Time_Period)); })
+    .y(function(d) { return y(d.fear); });
+
+     var valueline_sadness = d3.line()
+    .x(function(d) { return x(Date.parse(d.Time_Period)); })
+    .y(function(d) { return y(d.sadness); });
+
+      var valueline_trust = d3.line()
+    .x(function(d) { return x(Date.parse(d.Time_Period)); })
+    .y(function(d) { return y(d.trust); });
+
+      var valueline_joy = d3.line()
+    .x(function(d) { return x(Date.parse(d.Time_Period)); })
+    .y(function(d) { return y(d.joy); });
+
+      var valueline_anticipation = d3.line()
+    .x(function(d) { return x(Date.parse(d.Time_Period)); })
+    .y(function(d) { return y(d.anticipation); });
+
+      var valueline_surprise = d3.line()
+    .x(function(d) { return x(Date.parse(d.Time_Period)); })
+    .y(function(d) { return y(d.surprise); });
+
+      var valueline_sadness = d3.line()
+    .x(function(d) { return x(Date.parse(d.Time_Period)); })
+    .y(function(d) { return y(d.sadness); });
+
+      var valueline_overall = d3.line()
+    .x(function(d) { return x(Date.parse(d.Time_Period)); })
+    .y(function(d) { return y(d.overall_sentiment); });
+
+     var valueline_dic={
+        "anger":valueline_anger,
+        "disgust":valueline_disgust,
+        "fear":valueline_fear,
+        "sadness":valueline_sadness,
+        "trust":valueline_trust,
+        "joy":valueline_joy,
+        "anticipation":valueline_anticipation,
+        "surprise":valueline_surprise,
+        "sadness":valueline_sadness,
+        "pos-neg":valueline_overall
+    }
+var category=['anger','anticipation','disgust','fear','joy','sadness','surprise','trust','pos-neg']
+var color = d3.scaleOrdinal().domain(category)
+  .range(d3.schemeSet3);
+var symbols = d3.scaleOrdinal(d3.symbols);
+var symbol = d3.symbol().size(100); 
+
+
+
+svg.selectAll(".symbol")
+    .data(category)
+  .enter().append("path")
+    .attr("class", "symbol")
+    .style("fill", function(d) { return color(d); })
+   
+  
+     var legend = svg.selectAll(".legend")
+    .data(color.domain())
+  .enter().append("g")
+    .attr("class", "legend")
+    .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+  
+  legend.append("path")
+    .style("fill", function(d) { return color(d); })
+        .attr("d", function(d, i) { return symbol.type(symbols(1))(); })
+        .attr("transform", function(d, i) { 
+            return "translate(" + (width -10) + "," + 10 + ")"; 
+        })
+    .on("click",function(d,i){
+       var node=d3.select(this)
+       //console.log(node)
+       var category=d;
+        if (node.attr("checked")==null || node.attr("checked")=="false"){
+             node.attr("checked","true")
+            console.log(node.attr("checked"));
+            
+            svg.selectAll("."+d)
+        .attr("d", valueline_dic[category](current_data))
+        .style("stroke",  color(category));
+           
+        }
+        else
+        {
+             node.attr("checked","false")
+             console.log(node.attr("checked"));
+             svg.selectAll("."+d)
+             .attr("d", [])
+            
+
+        }
+        
+    console.log("test",d)
+    
+    })
+
+
+  
+  legend.append("text")
+      .attr("x", width - 24)
+      .attr("y", 9)
+      .attr("dy", ".35em")
+      .style("text-anchor", "end")
+      .text(function(d) { return d; });
+
+
+    // Next, we define the renderVis callback.  This is used when the page first loads
+    // to draw data for the entire US.  It is also called whenever the select control is changed.
+    function renderVis(_subset) {
+        var data_subset = data;
+
+        data_subset = data.filter(function(d) {return (d.state == _subset); })
+
+
+
+        let pairs=data_subset.map(function(d){return d.scores})
+        current_data=pairs
+
+
+
+    if(_subset == "California" || _subset == "New York"){
+        svg.selectAll(".cases")
+            .attr("d", valueline_bigcase(pairs))
+            .style("stroke-dasharray", ("3, 3"))
+        if(document.getElementById("test2") != null){
+            document.getElementById("test2").remove()
+        }
+        if(document.getElementById("test4") != null){
+            document.getElementById("test4").remove()
+        }
+        if (document.getElementById("test3") == null) {
+            svg.append("g")
+                .attr("class", "axis")
+                .attr("id", "test3")
+                .attr("transform", "translate(" + (width * 4 / 5) + ",0)")
+                .call(d3.axisRight(y3))
+                .transition().duration(500).style("fill-opacity", 0)
+                .transition().delay(500).duration(1000).style("fill-opacity", 1).style("background", "").style("color", "steelblue")
+        }
+    }
+    else if(_subset == "Texas" || _subset == "Massachusetts" || _subset == "New Jersey" || _subset == "Pennsylvania" || _subset == "Florida" || _subset == "Illinois"){
+        svg.selectAll(".cases")
+            .attr("d", valueline_medcase(pairs))
+            .style("stroke-dasharray", ("3, 3"))
+        if(document.getElementById("test2") != null){
+            document.getElementById("test2").remove()
+        }
+        if(document.getElementById("test3") != null){
+            document.getElementById("test3").remove()
+        }
+        if (document.getElementById("test4") == null) {
+            svg.append("g")
+                .attr("class", "axis")
+                .attr("id", "test4")
+                .attr("transform", "translate(" + (width * 4 / 5) + ",0)")
+                .call(d3.axisRight(y4))
+                .transition().duration(500).style("fill-opacity", 0)
+                .transition().delay(500).duration(1000).style("fill-opacity", 1).style("background", "").style("color", "steelblue")
+        }
+    }
+    else {
+        svg.selectAll(".cases")
+            .attr("d", valueline_case(pairs))
+            .style("stroke-dasharray", ("3, 3"))
+        if(document.getElementById("test3") != null){
+            document.getElementById("test3").remove()
+        }
+        if(document.getElementById("test4") != null){
+            document.getElementById("test4").remove()
+        }
+        if(document.getElementById("test2") == null) {
+            svg.append("g")
+                .attr("class", "axis")
+                .attr("id", "test2")
+                .attr("transform", "translate(" + (width * 4 / 5) + ",0)")
+                .call(d3.axisRight(y2))
+                .transition().duration(500).style("fill-opacity", 0)
+                .transition().delay(500).duration(1000).style("fill-opacity", 1).style("background", "").style("color", "steelblue")
+        }
+    }
+
+        // svg.selectAll(".cases")
+        // .attr("d", valueline_case(pairs))
+        // .style("stroke-dasharray", ("3, 3"))
+
+        for (var key in valueline_dic) {
+             svg.selectAll("."+key)
+             .attr("d", [])
+        }
+
+        // svg.selectAll(".cases")
+        // .attr("d", valueline_case(pairs))
+        // .style("stroke-dasharray", ("3, 3"))
+
+
+      
+
+
+/*
+
+        svg.selectAll(".anger")
+        .attr("d", valueline_anger(pairs))
+        .style("stroke",  "red");
+
+        svg.selectAll(".anticipation")
+        .attr("d", valueline_anticipation(pairs))
+        .style("stroke",  "yellow");
+
+        svg.selectAll(".fear")
+        .attr("d", valueline_fear(pairs))
+        .style("stroke",  "orange");
+
+        svg.selectAll(".disgust")
+        .attr("d", valueline_disgust(pairs))
+        .style("stroke",  "green");
+
+        svg.selectAll(".sadness")
+        .attr("d", valueline_sadness(pairs))
+        .style("stroke",  "purple");
+
+        svg.selectAll(".joy")
+        .attr("d", valueline_joy(pairs))
+        .style("stroke",  "pink");
+
+
+
+         svg.selectAll(".surprise")
+        .attr("d", valueline_surprise(pairs))
+        .style("stroke",  "brown");
+
+
+
+   */
+
+
+
+        //Render the sentiment scatterplot.
+
+
+        // Note: we don't need to deal with the update selection.  WHY?
+    }
+
+    // Update the correlation score based on the selected subset.
+
+
+</script>
+</body>
+</html>
