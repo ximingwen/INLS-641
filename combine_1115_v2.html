@@ -29,7 +29,7 @@
 #slider-container {
     position: absolute;
     text-align: center;
-    width: 500px;
+    width: 880px;
     top: 200px;
     left: 80px;
     margin-top:60px;
@@ -70,7 +70,7 @@
     <div id="slider-container">
         <span class="tag" style="left: 0;font-size: 12px; font-family: Verdana">4/1/2020</span>
         <span class="tag" style="right: 0; font-size: 12px; font-family: Verdana">6/16/2020</span>
-        <span id="display" class="tag" style="font-size: 14px; font-weight: 600; font-family: Verdana; left: 180px;">4/1/2020-4/15/2020</span>
+        <span id="display" class="tag" style="font-size: 14px; font-weight: 600; font-family: Verdana; left: 360px;">4/1/2020-4/15/2020</span>
     <div id="slider"></div>
     </div>
 
@@ -175,7 +175,7 @@
             .each(d => {
                 current_data.forEach(item => {
                     if (d.properties.name == item.State) {
-                        d.sentiment = +item.overall_sentiment;
+                        d.sentiment = +item.overall_sentiment.toFixed(2);
                         d.case = +item.ConfirmedCases;
                     }
                 })})
@@ -205,7 +205,7 @@
             .each(function(d) {
                 current_data.forEach(item => {
                     if (d.properties.name == item.State) {
-                        d.sentiment = +item.overall_sentiment;
+                        d.sentiment = +item.overall_sentiment.toFixed(2);
                         d.case = +item.ConfirmedCases;
                     }});
                 d3.select(this)
@@ -303,7 +303,7 @@
                 current_data.forEach(item => {
                     if (d.properties.name == item.State) {
                         d.case = +item.ConfirmedCases;
-                        d.sentiment = +item.overall_sentiment;
+                        d.sentiment = +item.overall_sentiment.toFixed(2);
                     }
                 })
                 /*if (!d.value) {
@@ -343,7 +343,7 @@
             current_data.forEach(item => {
                 if (d.properties.name == item.State) {
                     d.case = +item.ConfirmedCases;
-                    d.sentiment = +item.overall_sentiment;
+                    d.sentiment = +item.overall_sentiment.toFixed(2);
                 }
             });
 
