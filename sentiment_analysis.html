@@ -185,16 +185,23 @@
             .style("stroke", "black")
             .style("stroke-width", 0.5)
             .on("mouseover", function(d) {
-
-                var onclick=d3.select(this).attr("onclick")
-                if (onclick == null || onclick==0){
+              
+        
+                   var onclick=d3.select(this).attr("onclick")
+              
+                 if (onclick == null || onclick==0){
                     d3.select(this).style("stroke-width", 0.5).style("opacity", 0.5);
+                 
+                }
+                if (onclick == 1)
+                {
+                    d3.select(this).style("stroke-width", 0.5).style("opacity", 0.3);
+               
                 }
                
                 
                 tooltip.html("State: " + d.properties.name + "</br>Confirmed Cases: " + d.case + "</br>Sentiment Score: " + d.sentiment);
 
-                d3.select(this).style("stroke-width", 0.5).style("opacity", 0.5);
                 tooltip.html("<p style=\"font-family:verdana\"><font size=\"-1\"><b>State: </b>" + d.properties.name + "</br><b>Confirmed Cases: </b>" + d.case + "</br><b>Sentiment Score: </b>" + d.sentiment + "</font></p>");
 
                 tooltip.style("visibility", "visible");})
@@ -218,7 +225,6 @@
                     d3.select(this).attr("onclick",0)
                 }
                 
-                console.log(d3.select(this).attr("onclick"));
                 document.getElementById('test').contentWindow.renderVis(d.properties.name);
                 document.getElementById("statename").innerHTML = "You are currently viewing data for " + d.properties.name + " State."},
                 
@@ -242,13 +248,19 @@
             .on("mouseover", function(d) {
 
                 var onclick=d3.select(this).attr("onclick")
+               
                  if (onclick == null || onclick==0){
                     d3.select(this).style("stroke-width", 0.5).style("opacity", 0.5);
-                }
                
+                }
+                if (onclick==1){
+                    d3.select(this).style("stroke-width", 0.5).style("opacity", 0.3);
+                 
+                }
+                
                 tooltip.html("State: " + d.properties.name + "</br>Confirmed Cases: " + d.case + "</br>Sentiment Score: " + d.sentiment);
 
-                d3.select(this).style("stroke-width", 0.5).style("opacity", 0.5);
+               
                 tooltip.html("<p style=\"font-family:verdana\"><font size=\"-1\"><b>State: </b>" + d.properties.name + "</br><b>Confirmed Cases: </b>" + d.case + "</br><b>Sentiment Score: </b>" + d.sentiment + "</font></p>");
 
                 tooltip.style("visibility", "visible");})
@@ -328,7 +340,7 @@
         else{
             console.log(_sub==="anger");
             data = d3.nest(data_anger).key(d => d.Time_Period).entries(data_anger);}
-        console.log(data);
+    
 
         updateCircle(data, 0);
         updateStateColor(data,0);

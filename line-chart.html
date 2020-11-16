@@ -398,18 +398,18 @@ svg.selectAll(".symbol")
     // to draw data for the entire US.  It is also called whenever the select control is changed.
     function renderVis(_subset) {
         var data_subset = data;
-        console.log(_subset)
+     
 
 
         data_subset = data.filter(function(d) {return (d.state == us_state_abbrev[_subset]); })
-        console.log(data_subset)
+     
 
 
 
         let pairs=data_subset.map(function(d){return d.scores})
         current_data=pairs
 
-          console.log(current_data)
+       
 
     if(_subset == "California" || _subset == "New York"){
         svg.selectAll(".cases")
