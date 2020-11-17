@@ -30,7 +30,7 @@
     position: absolute;
     text-align: center;
     width: 880px;
-    top: 200px;
+    top: 180px;
     left: 80px;
     margin-top:60px;
 }
@@ -40,14 +40,14 @@
 <p style="font-family:verdana"><font size="+2"><b>Twitter Sentiment during the COVID-19 Pandemic (Spring 2020)</b></font></p>
     <p style="font-family:verdana"><font size="-1">
         This visualization tool displays the progression of various emotions over the course
-        of the COVID-19 outbreak in Spring, 2020. Emotion data from each U.S. state
+        of the COVID-19 outbreak in Spring 2020. Emotion data from each U.S. state
         has been gathered from Twitter and analyzed using the R Syuzhet Package for sentiment analysis.
         To view the distribution of an emotion, select one from the dropdown menu.
         To change the date of the data you would like to view, use the sliding bar.
         The size of each bubble on the map corresponds with the number of confirmed COVID-19 cases
         recorded in each respective state. The color of each state represents its "Sentiment Score," or
-        how strongly the emotion was expressed on the state's Twitter feed. The higher the score, the stronger the emotion.
-        The line graph below will represent changes in emotion over time. Click on a state to populate
+        how strongly the emotion was expressed. The higher the score, the stronger the emotion.
+        The line graph below represents changes in emotion over time. Click on a state to populate
         the graph with data.
 
     </font>
@@ -224,9 +224,9 @@
                     d3.select(this).style("opacity", 1)
                     d3.select(this).attr("onclick",0)
                 }
-                
+
                 document.getElementById('test').contentWindow.renderVis(d.properties.name);
-                document.getElementById("statename").innerHTML = "You are currently viewing data for " + d.properties.name + " State."},
+                document.getElementById("statename").innerHTML = "You are currently viewing data for the state of " + d.properties.name + "."},
                 
             )
     };
