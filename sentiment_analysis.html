@@ -49,7 +49,13 @@
         how strongly the emotion was expressed. The higher the score, the stronger the emotion.
         The line graph below represents changes in emotion over time. Click on a state to populate
         the graph with data.
-
+        
+        
+    <!--
+    Select control to set the sentiment category to be visualized.  Note that the JavaScript
+    callback named "renderVis(...)"" is triggered each time the value for this select
+    control changes.
+    -->
     </font>
     </p>
     <p style="font-family:verdana"><i>Select an emotion:
@@ -66,14 +72,18 @@
 
         </select>
         </i></p>
-
+    <!--
+    This is the container for the slider of choosing which time period to be rendered
+    -->
     <div id="slider-container">
         <span class="tag" style="left: 0;font-size: 12px; font-family: Verdana">4/1/2020</span>
         <span class="tag" style="right: 0; font-size: 12px; font-family: Verdana">6/16/2020</span>
         <span id="display" class="tag" style="font-size: 14px; font-weight: 600; font-family: Verdana; left: 360px;">4/1/2020-4/15/2020</span>
     <div id="slider"></div>
     </div>
-
+    <!--
+    This is the container in which D3 will draw the map.
+    -->
     <div id="container"></div>
 
 <p style="font-family:verdana"><font size="+1"><b>Changes in Twitter Sentiment from April to June, 2020</b></font></p>
@@ -83,7 +93,9 @@
 <span id="statename" style="font-family:verdana">&nbsp;</span><br/>
 
 </font>
-
+    <!--
+    These are the data files for each sentiment category, each data file contains the cases number and sentiment scoure for each state.
+    -->
     <script src="https://d3js.org/d3.v5.min.js"></script>
     <script src="js\jquery.min.js"></script>
     <script src="js\jquery-ui.min.js"></script>
@@ -97,7 +109,9 @@
     <script type="text/javascript" src="data\data_disgust.js"></script>
     <script type="text/javascript" src="data\data_anticipation.js"></script>
     <script type="text/javascript" src="data\data_anger.js"></script>
-
+    <!--
+    Finally, here comes the actual JavaScript implementation code.
+    -->
     <script type="text/javascript">
 
     var tooltip = d3.select("body")
@@ -110,15 +124,16 @@
     var projection = d3.geoMercator()
         .center([-98, 42])
         .scale(900);
-
+    // Generate geographic path and project
     var path = d3.geoPath().projection(projection);
 
     var svg = d3.select("#container")
         .append("svg")
         .attr("height", 580)
         .attr("width", 1200);
-
+    // This is color scale for rendering the legend
     var colors2 = ["#ffffd9", "#edf8b1", "#c7e9b4", "#7fcdbb", "#41b6c4", "#1d91c0", "#225ea8", "#253494", "#081d58"];
+    // This is color scale for rendering the map color
     var colors = ["#081d58","#253494","#225ea8","#1d91c0","#41b6c4","#7fcdbb","#c7e9b4","#edf8b1","#ffffd9"]
 
     var colorScale = d3.scaleQuantile()
@@ -165,7 +180,8 @@
         .style("font-size", 12)
         .style("font-family", "Verdana")
         .text(d => d);
-
+    
+        // This is the function for initializing the colors for states
     function colorState(data, index){
         let current_data = data[index].values;
         //console.log(current_data)
@@ -231,7 +247,7 @@
             )
     };
 
-
+    // This is the function for updating the colors for states when users using the slider or selection box
     function updateStateColor(data, index) {
         let current_data = data[index].values;
 
@@ -309,9 +325,8 @@
         drawCircle(data, 0);
     }
 
+    // This is the function to select which data file is used for rendering
     function renderVis(_sub){
-    //d3.csv("data.csv").then(data => {
-        //console.log(data);
         if (_sub==="overall"){
             console.log(_sub==="overall");
             data = d3.nest(data_overall).key(d => d.Time_Period).entries(data_overall);}
@@ -356,7 +371,7 @@
                 document.getElementById("display").innerHTML = data[ui.value].key;
             }
         });}
-
+    // This is the function for initializing the circles which represent the cases number
     function drawCircle(data, index) {
         let current_data = data[index].values;
         svg.selectAll("circle")
@@ -401,7 +416,8 @@
                 function() {d3.select(this).style("opacity", 0.3)}
             )
     };
-
+    
+    // This is the function for updating the circles size for states when users using the slider or selection box
     function updateCircle(data, index) {
         let current_data = data[index].values;
         //console.log(index, data[index])
@@ -439,6 +455,7 @@
             )
     };
 
+// Adding the line charts to this page
 </script>
   <iframe src="line-chart.html" id="test" width="1200px" height="800px" frameborder="0"
 scrolling="no"></iframe>
