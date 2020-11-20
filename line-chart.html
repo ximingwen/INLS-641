@@ -34,27 +34,7 @@
     </style>
 </head>
 <body>
-<!--
-Select control to set the region to be visualized.  Note that the JavaScript
-callback named "renderVis(...)"" is triggered each time the value for this select
-control changes.
--->
-<!-- <p>Select a state:
-    <select onchange="renderVis(this.options[this.selectedIndex].value);">
-        <option value="AL">Alabama</option>
-        <option value="AZ">Arizona</option>
-        <option value="AR">Arkansas</option>
-        <option value="CA">California</option>
-        <option value="CO">Colorado</option>
-        <option value="CT">Connecticut</option>
-        <option value="DE">Delaware</option>
-        <option value="FL">Florida</option>
-        <option value="GA">Georgia</option>
-        <option value="HI">Hawaii</option>
-        <option value="ID">Idaho</option>
-        <option value="US">United States</option>
-    </select>
-</p> -->
+
 
 
 <!--
@@ -182,11 +162,7 @@ Finally, here comes the actual JavaScript code.
         .domain([200000,0])
         .range([margin, height-margin]);
 
-    // There are 4 regions in the continental US, plus "Other" for
-    // Hawaii and Alaska.
-    // var states = ["AL","AR", "AZ", "CA", "CA", "CT", "GA",
-    //                 "DE", "FL", "HI", "ID", "US"];
-    // var line_color = d3.scaleOrdinal(d3.schemeCategory10);
+
 
     // Add axes.  First the X axis and label.
     svg.append("g")
@@ -394,7 +370,7 @@ svg.selectAll(".symbol")
       .style("text-anchor", "end")
       .text(function(d) { return d; });
 
-
+    // The reference for the line graph: https://bl.ocks.org/d3noob/e34791a32a54e015f57d
     // Next, we define the renderVis callback.  This is used when the page first loads
     // to draw data for the entire US.  It is also called whenever the select control is changed.
     function renderVis(_subset) {
@@ -537,7 +513,7 @@ svg.selectAll(".symbol")
         //Render the sentiment scatterplot.
 
 
-        // Note: we don't need to deal with the update selection.  WHY?
+
     }
 
     // Update the correlation score based on the selected subset.
